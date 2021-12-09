@@ -12,10 +12,7 @@ import numpy as np
 from sklearn import svm
 
 # from profiler import aio_profiler
-# from utils import (
-#     # os as os,
-#     imread
-# )
+
 import os
 
 # red green yellow white orange blur
@@ -79,7 +76,6 @@ async def convert_img(color_img: list, c: str) -> tuple:
     for i, item in enumerate(color_img):
         # 图片向量
         img_arr = cv2.imread(item)
-        # img_arr = await imread(item)
         # 图片向量调整为25*25
         img_arr = cv2.resize(img_arr, (25, 25))
         # 归一化处理

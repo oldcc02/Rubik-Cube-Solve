@@ -77,8 +77,8 @@ async def convert_img(color_img: list, c: str) -> tuple:
 
     for i, item in enumerate(color_img):
         # 图片向量
-        # img_arr = cv2.imread(item)
-        img_arr = await imread(item)
+        img_arr = cv2.imread(item)
+        # img_arr = await imread(item)
 
         # 图片向量调整为25*25
         img_arr = cv2.resize(img_arr, (25, 25))
