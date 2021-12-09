@@ -4,6 +4,7 @@
 # @Email:  chenzhiyang@sinontt.com
 # @Time: 2021/12/9 11:22
 import asyncio
+import time
 
 import cv2
 import joblib
@@ -78,6 +79,7 @@ async def convert_img(color_img: list, c: str) -> tuple:
         # 图片向量
         # img_arr = cv2.imread(item)
         img_arr = await imread(item)
+
         # 图片向量调整为25*25
         img_arr = cv2.resize(img_arr, (25, 25))
         # 归一化处理
@@ -110,7 +112,7 @@ async def init_dir(dir_name: str = "imgs"):
         await aio_os.makedirs(color_class_dir)
 
 
-@aio_profiler
+# @aio_profiler
 async def create_svm(img_root_path):
     """
     构建svm模型,并保存模型到图片根路径
@@ -127,6 +129,9 @@ async def create_svm(img_root_path):
 
 
 if __name__ == '__main__':
+    st = time.perf_counter()
     path = r"../imgs"
     loop = asyncio.get_event_loop()
     loop.run_until_complete(create_svm(path))
+    et = time.perf_counter()
+    print("Training spent {:.4f}s.".format((et - st)))

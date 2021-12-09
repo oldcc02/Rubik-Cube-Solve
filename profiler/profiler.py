@@ -27,9 +27,9 @@ def syn_profiler(function):
     """
     profiler = Profiler()
 
-    def inner():
+    def inner(*args, **kwargs):
         profiler.start()
-        function()
+        function(*args, **kwargs)
         profiler.stop()
         profiler.print()
 
