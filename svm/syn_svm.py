@@ -77,7 +77,7 @@ async def convert_img(color_img: list, c: str) -> tuple:
         # 图片向量
         img_arr = cv2.imread(item)
         # 图片向量调整为25*25
-        img_arr = cv2.resize(img_arr, (25, 25))
+        img_arr = cv2.resize(img_arr, (25, 25), interpolation=cv2.INTER_CUBIC)
         # 归一化处理
         img_normal = (img_arr - np.min(img_arr)) / (np.max(img_arr) - np.min(img_arr))
         # 转为一维向量 1 * 1875
@@ -122,6 +122,23 @@ async def create_svm(img_root_path):
     rf = clf.fit(mat, label)
     # 存储训练好的模型
     joblib.dump(rf, os.path.join(img_root_path, 'svm.model'))
+    img_path = r"D:\pythonproject\rubik_solve\imgs\W"
+
+    # def img2vector(img):
+    #     img = cv2.resize(img, (25, 25), interpolation=cv2.INTER_CUBIC)
+    #     img_arr = np.array(img)
+    #     img_normlization = img_arr / 255
+    #     img_arr2 = np.reshape(img_normlization, (1, -1))
+    #     return img_arr2
+    #
+    # for file in os.listdir(img_path):
+    #     filepath = os.path.join(img_path, file)
+    #     img = cv2.imread(filepath)
+    #
+    #     img2arr = img2vector(img)
+    #     preResult = clf.predict(img2arr)
+    #
+    #     print(preResult)
 
 
 if __name__ == '__main__':
