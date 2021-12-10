@@ -5,6 +5,7 @@
 # @Time: 2021/12/9 11:22
 import asyncio
 import time
+from collections import defaultdict, Counter
 
 import cv2
 import joblib
@@ -23,29 +24,37 @@ color_class = ['R', 'G', 'Y', 'W', 'O', 'B']
 img_type = ['.jpg', '.png', '.jpeg']
 
 
-async def load_img(file_root_path: str) -> tuple:
+async def load_img(file_root_path: str, proportion: float = 1 / 3) -> tuple:
     """
     加载所有图片，并返回所有图片数据的一维向量数组，和标注数组
+    :param proportion: 测试数据集比例划分
     :param file_root_path: 图片根路径
     :return: res_mat, res_label
     """
-    data_mat = []
-    data_label = []
+    train_data_mat = []
+    train_data_label = []
+    test_data_mat = defaultdict(list)
     if not await aio_os.path.exists(file_root_path):
         await init_dir()
-        return data_mat, data_label
+        return train_data_mat, train_data_label
     for c in color_class:
         color_dir_path = await aio_os.path.join(file_root_path, c)
         # 获取一个文件下的文件列表
         color_img_list = await get_file_list(color_dir_path)
+        length = int(len(color_img_list) * proportion)
         if color_img_list:
-            mat, label = await convert_img(color_img_list, c)
-            data_mat.append(mat)
-            data_label.append(label)
-    res_mat = np.concatenate(data_mat, axis=0)
-    res_label = np.concatenate(data_label, axis=0)
+            train_img_list = color_img_list[:-length]
+            test_img_list = color_img_list[-length:]
 
-    return res_mat, res_label
+            mat, label = await convert_img(train_img_list, c)
+            t_mat, _ = await convert_img(test_img_list, c)
+            train_data_mat.append(mat)
+            train_data_label.append(label)
+            test_data_mat[c].append(t_mat)
+    res_mat = np.concatenate(train_data_mat, axis=0)
+    res_label = np.concatenate(train_data_label, axis=0)
+
+    return res_mat, res_label, test_data_mat
 
 
 async def get_file_list(file_dir_path: str) -> list:
@@ -112,26 +121,49 @@ async def init_dir(dir_name: str = "imgs"):
         await aio_os.makedirs(color_class_dir)
 
 
-# @aio_profiler
-async def create_svm(img_root_path):
+@aio_profiler
+async def create_svm(img_root_path: str):
     """
     构建svm模型,并保存模型到图片根路径
     :param img_root_path: 图片根目录路径
     """
+    st = time.perf_counter()
     clf = svm.SVC(C=1.0, kernel='rbf')
-    mat, label = await load_img(img_root_path)
-    # todo 切分训练数据集和测试数据集 7:3
+    mat, label, t_mat = await load_img(img_root_path)
+    # todo 切分训练数据集和测试数据集 2:1
     # ...
     # 开始训练模型
     rf = clf.fit(mat, label)
     # 存储训练好的模型
     joblib.dump(rf, await aio_os.path.join(img_root_path, 'svm.model'))
+    et = time.perf_counter()
+
+    res = await predict_t_mat(clf, t_mat)
+    t_num = sum([len(x[0]) for x in t_mat.values()])
+    res['本次训练总结:\n'] = f"训练集数据为 {len(mat)} 张 " \
+                       f"测试数据集为 {t_num} 张 " \
+                       f"花费 {round((et - st), 4)}s"
+    for k, v in res.items():
+        print(k, v)
+
+
+async def predict_t_mat(clf, t_mat: defaultdict):
+    predict_res = defaultdict(str)
+    for color, color_mat in t_mat.items():
+        pass_ = 0
+        for mat in color_mat:
+            res = clf.predict(mat)
+            res = Counter(res)
+            pass_ = res[color]
+        check = len(color_mat[0])
+        predict_res[color] = f"共计测试 {check} 张，识别率为{round(pass_ / check, 2) * 100}%"
+
+    return predict_res
 
 
 if __name__ == '__main__':
-    st = time.perf_counter()
     path = r"../imgs"
     loop = asyncio.get_event_loop()
+    # from utils.aio_wrap import loop
     loop.run_until_complete(create_svm(path))
-    et = time.perf_counter()
-    print("Training spent {:.4f}s.".format((et - st)))
+
