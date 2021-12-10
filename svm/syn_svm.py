@@ -3,20 +3,16 @@
 # @Author: 陈志洋
 # @Email:  chenzhiyang@sinontt.com
 # @Time: 2021/12/9 11:22
-import asyncio
-import time
-from collections import Counter, defaultdict
-
-import cv2
-import joblib
-import numpy as np
-from sklearn import svm
-
-# from profiler import aio_profiler
-
 import os
+import cv2
+import time
+import joblib
+import asyncio
 import logging
-# red green yellow white orange blur
+import numpy as np
+
+from sklearn import svm
+from collections import Counter, defaultdict
 from profiler import aio_profiler
 
 # 日志器
@@ -131,7 +127,7 @@ async def init_dir(dir_name: str = "imgs"):
         os.makedirs(color_class_dir)
 
 
-@aio_profiler
+# @aio_profiler
 async def create_svm(img_root_path):
     """
     构建svm模型,并保存模型到图片根路径
