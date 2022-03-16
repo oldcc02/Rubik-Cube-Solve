@@ -8,3 +8,4 @@ scipy==1.7.3
 setuptools==57.0.0
 threadpoolctl==3.0.0
 wheel==0.36.2
+pyserial==3.5

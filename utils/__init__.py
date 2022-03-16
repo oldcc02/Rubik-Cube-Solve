@@ -7,3 +7,4 @@
 from .os import *
 from .async_cv2 import imread
 from .str_tools import *
+from .logger import *
