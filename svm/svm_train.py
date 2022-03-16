@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-# File: my_test.py
+# File: syn_svm.py
 # @Author: 陈志洋
-# @Email:  chenzhiyang@sinontt.com
+# @Email:  1209685646@qq.com
 # @Time: 2021/12/9 11:22
-import os
-import cv2
-import time
-import joblib
 import asyncio
 import logging
-import numpy as np
-
-from sklearn import svm
+import os
+import time
 from collections import Counter, defaultdict
-from profiler import aio_profiler
+
+import cv2
+import joblib
+import numpy as np
+from sklearn import svm
 
 # 日志器
 logger = logging.getLogger()
@@ -34,9 +33,9 @@ async def load_img(file_root_path: str) -> tuple:
     :param file_root_path: 图片根路径
     :return: res_mat, res_label
     """
-    train_data_mat = []
+    train_data_mat = []  # 训练集
     train_data_label = []
-    test_data_mat = defaultdict(list)
+    test_data_mat = defaultdict(list) # 测试集
     if not os.path.exists(file_root_path):
         await init_dir()
         return train_data_mat, train_data_label
@@ -44,6 +43,7 @@ async def load_img(file_root_path: str) -> tuple:
         color_dir_path = os.path.join(file_root_path, c)
         # 获取一个文件下的文件列表
         color_img_list = await get_file_list(color_dir_path)
+        # 划分测试数据 与 模型数据
         length = int(len(color_img_list) * proportion)
         if color_img_list:
             train_img_list = color_img_list[:-length]

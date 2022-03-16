@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: os.py
 # @Author: 陈志洋
-# @Email:  chenzhiyang@sinontt.com
+# @Email:  1209685646@qq.com
 # @Time: 2021/12/9 17:12
 import os
 

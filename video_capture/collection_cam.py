@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: collection_cam.py
 # @Author: 陈志洋
-# @Email:  chenzhiyang@sinontt.com
+# @Email:  1209685646@qq.com
 # @Time: 2021/12/10 15:58
 import os
 import cv2

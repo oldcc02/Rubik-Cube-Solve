@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: aio_wrap.py
 # @Author: 陈志洋
-# @Email:  chenzhiyang@sinontt.com
+# @Email:  1209685646@qq.com
 # @Time: 2021/12/9 17:29
 import asyncio
 from functools import partial, wraps

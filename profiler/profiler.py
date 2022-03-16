@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: profiler.py
 # @Author: 陈志洋
-# @Email:  chenzhiyang@sinontt.com
+# @Email:  1209685646@qq.com
 # @Time: 2021/10/15 14:25
 from pyinstrument import Profiler
 

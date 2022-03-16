@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: data_collection.py
 # @Author: 陈志洋
-# @Email:  chenzhiyang@sinontt.com
+# @Email:  1209685646@qq.com
 # @Time: 2021/12/10 16:34
 import cv2
 import joblib
@@ -69,9 +69,9 @@ for index, cnt in enumerate(contour):
     mid_y = int(y + h / 2)
     mid.append((mid_x, mid_y))
 
-# print(mid)
+
 mid = sorted(mid, key=lambda a: a[0])
-# print(mid)
+
 
 res = []
 temp = 0
@@ -89,27 +89,4 @@ for i in range(0, 9):
     for j in range(i, 3):
         res[i][j], res[j][i] = res[j][i], res[i][j]
 print(res)
-# i = 1
-# for x, y in res:
-#     img = cv2.putText(img, str(i), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), 5,
-#                       cv2.LINE_AA, False)
-#     i += 1
 
-
-# for index, cnt in enumerate(contour):
-#     x, y, w, h = cv2.boundingRect(cnt)
-#     img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 1)
-#     mid_x = int(x + w / 2)
-#     mid_y = int(y + h / 2)
-#
-#     img = cv2.putText(img, str(index), (mid_x, mid_y), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), 5,
-#                       cv2.LINE_AA, False)
-# if index==5:
-#     break
-
-
-# cv_show(img, 'img')
-
-# draw_img = img.copy()
-# res = cv2.drawContours(draw_img, contours, -1, (0, 0, 255), 2)
-# cv_show(res, 'res')
