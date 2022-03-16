@@ -11,13 +11,6 @@ import serial.tools.list_ports_windows as s_tools
 from utils import d_utf8, utf8, new_logger
 
 # 日志器
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(asctime)s-%(levelname)s-%(name)s:  %(message)s',
-#     datefmt='%Y-%m-%d %H:%M:%S'
-# )
-# logger = logging.getLogger(__file__)
-
 logger = new_logger(__file__)
 
 
@@ -30,15 +23,15 @@ class SerialArduino(object):
     # 串口通信对象
     serial = None
     # 验证arduino串口的校验值 默认为 “z”，
-    # 修改此处需要对应修改arduino收到此消息做出的响应 即 check_key
-    call_key = "z"
+    # 修改此处需要对应修改arduino收到此消息做出的响应 即 CHECK_KEY
+    CALL_KEY = "z"
     # arduino验证时返回的校验值 默认为 “o”
-    check_key = "o"
+    CHECK_KEY = "o"
     # 单个串口校验的有效时间 默认为 2 秒
-    check_timeout = 1
+    CHECK_TIMEOUT = 1
     # 在通过串口与arduino新建立连接时会导致arduino重启 ，这个时间是等待重启的时间
     # 如果不设置此时间会导致消息无法发送到arduino
-    wait_timeout = 2
+    WAIT_TIMEOUT = 2
 
     def __init__(self, com=None, **kwargs):
         for k, v in kwargs:
@@ -80,10 +73,10 @@ class SerialArduino(object):
         :return 串口对象
         """
         try:
-            serial = s.Serial(port, 9600, timeout=self.check_timeout)
+            serial = s.Serial(port, 9600, timeout=self.CHECK_TIMEOUT)
         except Exception as e:
             raise e
-        time.sleep(2)
+        time.sleep(self.WAIT_TIMEOUT)
         return serial
 
     def check_comports(self, serial_obj: s.Serial = None) -> bool:
@@ -93,11 +86,11 @@ class SerialArduino(object):
         """
         if self.com:
             serial_obj = self.new_serial_obj(self.com)
-        self.send_msg(self.call_key, serial_obj)
+        self.send_msg(self.CALL_KEY, serial_obj)
         n = 0
-        while n < self.check_timeout:
+        while n < self.CHECK_TIMEOUT:
             res = self.read_msg(serial_obj)
-            if res == self.check_key:
+            if res == self.CHECK_KEY:
                 self.serial = serial_obj
                 logger.info(f"Arduino connected in port {serial_obj.name}!")
                 return True
