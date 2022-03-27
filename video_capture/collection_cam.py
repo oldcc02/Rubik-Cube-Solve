@@ -61,7 +61,7 @@ class CameraThreadCollection(CameraThread):
 
 
 def main():
-    camera_id = "rtsp://admin:admin@192.168.101.6:8554/live"
+    camera_id = "rtsp://admin:admin@192.168.101.10:8554/live"
 
     thread = CameraThreadCollection(camera_id)
     thread.start()

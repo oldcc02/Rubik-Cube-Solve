@@ -24,10 +24,16 @@ class CameraThread(threading.Thread):
 
     def __init__(self, camera_id, img_height=480, img_width=640):
         super(CameraThread, self).__init__()
+        # 摄像头id
         self.camera_id = camera_id
+        # 窗口高度
         self.img_height = img_height
+        # 窗口宽度
         self.img_width = img_width
+
+        # 视频帧
         self.frame = np.zeros((img_height, img_width, 3), dtype=np.uint8)
+        # 线程退出标识符
         self.thread_exit = False
 
     def get_frame(self):
@@ -62,6 +68,7 @@ class CameraThread(threading.Thread):
         :param img:视频帧
         :return 包含所有轮廓的列表
         """
+        # 获取灰度图
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # 高斯模糊
         gs_img = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -74,17 +81,21 @@ class CameraThread(threading.Thread):
         """
         重写Thread类run方法，调用摄像头循环获取视频帧
         """
+        # 获取摄像头对象
         cap = cv2.VideoCapture(self.camera_id)
         while not self.thread_exit and cap.isOpened():
+            # cap.read获取一个视频帧
             ret, frame = cap.read()
-            frame = cv2.flip(frame, -1)
             if ret:
+                # 翻转帧
+                frame = cv2.flip(frame, -1)
                 frame = cv2.resize(frame, (self.img_width, self.img_height))
                 thread_lock.acquire()
                 self.frame = frame
                 thread_lock.release()
             else:
                 self.thread_exit = True
+        # 释放摄像头占用资源
         cap.release()
 
     def __del__(self):
@@ -92,3 +103,7 @@ class CameraThread(threading.Thread):
         在类被回收时前，关闭所有cv2产生的窗口
         """
         cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    web_thread = CameraThread(camera_id=1)
