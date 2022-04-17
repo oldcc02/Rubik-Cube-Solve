@@ -3,6 +3,7 @@
 # @Author: 陈志洋
 # @Email:  1209685646@qq.com
 # @Time: 2022/3/16 14:07
+import sys
 import time
 
 import serial as s
@@ -31,7 +32,7 @@ class SerialArduino(object):
     CHECK_TIMEOUT = 1
     # 在通过串口与arduino新建立连接时会导致arduino重启 ，这个时间是等待重启的时间
     # 如果不设置此时间会导致消息无法发送到arduino
-    WAIT_TIMEOUT = 2
+    WAIT_TIMEOUT = 4
 
     def __init__(self, com=None, **kwargs):
         for k, v in kwargs:
@@ -84,19 +85,25 @@ class SerialArduino(object):
         检测arduino是否在此串口
         :param serial_obj:  串口对象
         """
-        if self.com:
-            serial_obj = self.new_serial_obj(self.com)
-        self.send_msg(self.CALL_KEY, serial_obj)
-        n = 0
-        while n < self.CHECK_TIMEOUT:
-            res = self.read_msg(serial_obj)
-            if res == self.CHECK_KEY:
-                self.serial = serial_obj
-                logger.info(f"Arduino connected in port {serial_obj.name}!")
-                return True
-            time.sleep(1)
-            n += 1
-        return False
+        try:
+            if self.com:
+                serial_obj = self.new_serial_obj(self.com)
+            while serial_obj.read():
+                continue
+            self.send_msg(self.CALL_KEY, serial_obj)
+            n = 0
+            while n < self.CHECK_TIMEOUT:
+                res = self.read_msg(serial_obj)
+                if res == self.CHECK_KEY:
+                    self.serial = serial_obj
+                    logger.info(f"Arduino connected in port {serial_obj.name}!")
+                    return True
+                time.sleep(1)
+                n += 1
+            return False
+        except Exception as e:
+            logger.info("check comport failed error: {}".format(e))
+            return False
 
     def send_msg(self, msg: str, serial_obj: s.Serial = None) -> None:
         """
@@ -104,6 +111,7 @@ class SerialArduino(object):
         :param msg: 信息
         :param serial_obj: 串口对象 如果没有默认使用类里的串口对象
         """
+        logger.info(f"send {msg} to {self.serial.name if self.serial else serial_obj.name}")
         if serial_obj and serial_obj.is_open:
             serial_obj.write(utf8(msg))
         elif self.serial and self.serial.is_open:
@@ -115,11 +123,47 @@ class SerialArduino(object):
         :param serial_obj: 串口对象 如果没有默认使用类里的串口对象
         :return: 串口返回消息
         """
-        if serial_obj and serial_obj.is_open:
-            return d_utf8(serial_obj.read())
-        elif self.serial and self.serial.is_open:
-            return d_utf8(self.serial.read())
+        res = None
+        i = 0
+        while i < 5 and (res is None or res == ""):
+            if serial_obj and serial_obj.is_open:
+                res = d_utf8(serial_obj.read())
+            elif self.serial and self.serial.is_open:
+                res = d_utf8(self.serial.read())
+            i += 1
+            time.sleep(1)
+        logger.info(f"receive {res} from {self.serial.name if self.serial else serial_obj.name}")
+        return res
+
+    def check_cube(self):
+        self.send_msg("f")
+        self.shake_hand()
+        self.send_msg("b")
+        self.shake_hand()
+        self.send_msg("l")
+        self.shake_hand()
+        self.send_msg("r")
+        self.shake_hand()
+        self.send_msg("u")
+        self.shake_hand()
+        self.send_msg("d")
+        self.shake_hand()
+
+    def shake_hand(self):
+        i = 0
+        while i < 2:
+            if self.read_msg() == self.CHECK_KEY:
+                self.send_msg(self.CALL_KEY)
+                return
+            i += 1
+        logger.error("shake_hand failed timeout")
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    serial_arduino = SerialArduino()
+    serial_arduino = SerialArduino("COM4")
+    serial_arduino.send_msg("c")
+    # serial_arduino.check_cube()
+    # serial_arduino.send_msg("0")
+    # serial_arduino.send_msg("7")
+    # serial_arduino.send_msg("8")

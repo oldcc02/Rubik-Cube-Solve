@@ -8,7 +8,7 @@ import cv2
 
 from datetime import datetime
 
-from webcam_base import CameraThread, thread_lock
+from .webcam_base import CameraThread, thread_lock
 
 
 class CameraThreadCollection(CameraThread):
@@ -24,8 +24,16 @@ class CameraThreadCollection(CameraThread):
         """
         super(CameraThreadCollection, self).__init__(*args, **kwargs)
         self.color = color
+        self.file_root_path = file_root_path
         self.color_dir_path = os.path.join(file_root_path, color)
         self.img_save_type = img_save_type
+
+    def set_color(self, color):
+        self.color = color
+        self.color_dir_path = os.path.join(self.file_root_path, self.color)
+
+    def get_color(self):
+        return self.color
 
     def collection_frame(self, img):
         """
@@ -38,13 +46,14 @@ class CameraThreadCollection(CameraThread):
             try:
                 l_corner, r_corner, mid, rect_area = self._find_img_mid_point(cnt)
                 img = cv2.rectangle(img, l_corner, r_corner, (0, 255, 0), 2)
-                if 6000 > rect_area > 3000:
+                if 12000 > rect_area > 8000:
                     # 提取颜色块
                     solve_img = img[mid['y'] - 12:mid['y'] + 13, mid['x'] - 12:mid['x'] + 13]
                     save_path = self._img_save_path_setting()
                     cv2.imwrite(save_path, solve_img)
                 else:
                     continue
+
             except Exception as e:
                 print(e)
                 continue
@@ -63,7 +72,7 @@ class CameraThreadCollection(CameraThread):
 def main():
     camera_id = "rtsp://admin:admin@192.168.101.10:8554/live"
 
-    thread = CameraThreadCollection(camera_id)
+    thread = CameraThreadCollection(camera_id=camera_id)
     thread.start()
     st = datetime.now()
     while True:
