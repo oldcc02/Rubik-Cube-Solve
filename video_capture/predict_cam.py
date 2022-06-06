@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: predict_cam.py
-# @Author: 陈志洋
-# @Email:  1209685646@qq.com
+# @Author: 黄文俊
+
 # @Time: 2021/12/10 15:58
 import joblib
 import numpy as np
@@ -34,7 +34,7 @@ class CameraThreadPredict(CameraThread):
                 l_corner, r_corner, mid, rect_area = self._find_img_mid_point(cnt)
                 # img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 print(rect_area)
-                if 12000 > rect_area > 8000:
+                if 8000  > rect_area > 5000:
                     res = self.predict_color(mid['x'], mid['y'], img)
                     # 圈出颜色块
                     img = cv2.rectangle(img, l_corner, r_corner, (0, 255, 0), 2)
@@ -69,7 +69,7 @@ class CameraThreadPredict(CameraThread):
 
 
 def main():
-    camera_id = "rtsp://admin:admin@192.168.101.6:8554/live"
+    camera_id = "rtsp://admin:admin@192.168.101.5:8554/live"
 
     thread = CameraThreadPredict(camera_id)
     thread.start()

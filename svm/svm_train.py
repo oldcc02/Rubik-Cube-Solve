@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: syn_svm.py
-# @Author: 陈志洋
-# @Email:  1209685646@qq.com
+# @Author: 黄文俊
+
 # @Time: 2021/12/9 11:22
 import asyncio
 import logging
@@ -24,7 +24,7 @@ color_class = ['R', 'G', 'Y', 'W', 'O', 'B']
 img_type = ['.jpg', '.png', '.jpeg']
 
 # 测试数据集比例划分
-proportion = 1 / 3
+proportion = 1/10
 
 
 async def load_img(file_root_path: str) -> tuple:

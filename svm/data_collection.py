@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: data_collection.py
-# @Author: 陈志洋
-# @Email:  1209685646@qq.com
+# @Author: 黄文俊
+
 # @Time: 2021/12/10 16:34
 import cv2
 import joblib

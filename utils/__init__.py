@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: __init__.py.py
-# @Author: 陈志洋
-# @Email:  1209685646@qq.com
+# @Author: 黄文俊
+
 # @Time: 2021/12/9 17:11
 
 

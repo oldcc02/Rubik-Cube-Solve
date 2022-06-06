@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # File: serial_arduino.py
-# @Author: 陈志洋
-# @Email:  1209685646@qq.com
+# @Author: 黄文俊
+
 # @Time: 2022/3/16 14:07
 import sys
 import time
@@ -49,8 +49,7 @@ class SerialArduino(object):
 
     def get_arduino_port(self) -> None:
         """
-        获取可用连接的串口
-        :return comports: 串口字典
+        获取Arduino所在串口
         """
         logger.info("No default port set!")
         logger.info("Start scan ports to find which port running arduino")
@@ -130,29 +129,32 @@ class SerialArduino(object):
                 res = d_utf8(serial_obj.read())
             elif self.serial and self.serial.is_open:
                 res = d_utf8(self.serial.read())
+            if res:
+                break
             i += 1
             time.sleep(1)
         logger.info(f"receive {res} from {self.serial.name if self.serial else serial_obj.name}")
         return res
 
     def check_cube(self):
-        self.send_msg("f")
+        self.send_msg("n")
         self.shake_hand()
-        self.send_msg("b")
+        self.send_msg("o")
         self.shake_hand()
-        self.send_msg("l")
+        self.send_msg("p")
+        self.shake_hand()
+        self.send_msg("q")
         self.shake_hand()
         self.send_msg("r")
         self.shake_hand()
-        self.send_msg("u")
-        self.shake_hand()
-        self.send_msg("d")
+        self.send_msg("s")
         self.shake_hand()
 
     def shake_hand(self):
         i = 0
         while i < 2:
             if self.read_msg() == self.CHECK_KEY:
+                time.sleep(1)
                 self.send_msg(self.CALL_KEY)
                 return
             i += 1
@@ -162,8 +164,8 @@ class SerialArduino(object):
 
 if __name__ == '__main__':
     serial_arduino = SerialArduino("COM4")
-    serial_arduino.send_msg("c")
-    # serial_arduino.check_cube()
+    # serial_arduino.send_msg("c")
+    serial_arduino.check_cube()
     # serial_arduino.send_msg("0")
     # serial_arduino.send_msg("7")
     # serial_arduino.send_msg("8")
